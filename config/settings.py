@@ -16,7 +16,7 @@ CHANNEL_ID = env.str("CHANNEL_ID")
 DEBUG = env.bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = ["*"]
-CSRF_TRUSTED_ORIGINS = [""]
+CSRF_TRUSTED_ORIGINS = ["https://4144-83-222-7-214.ngrok-free.app"]
 
 
 INSTALLED_APPS = [
