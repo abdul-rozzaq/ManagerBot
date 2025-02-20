@@ -14,9 +14,10 @@ BOT_TOKEN = env.str("BOT_TOKEN")
 CHANNEL_ID = env.str("CHANNEL_ID")
 
 DEBUG = env.bool("DEBUG", default=False)
+WEBHOOK_URL = env.str("WEBHOOK_URL")
 
 ALLOWED_HOSTS = ["*"]
-CSRF_TRUSTED_ORIGINS = ["https://4144-83-222-7-214.ngrok-free.app"]
+CSRF_TRUSTED_ORIGINS = [WEBHOOK_URL]
 
 
 INSTALLED_APPS = [
