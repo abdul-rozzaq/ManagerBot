@@ -13,7 +13,7 @@ SECRET_KEY = "django-insecure-##w!x&0i84(+-dy9*s12f2z0s(cc*mnf1g=o%x(dzczeuortjy
 BOT_TOKEN = env.str("BOT_TOKEN")
 CHANNEL_ID = env.str("CHANNEL_ID")
 
-DEBUG = True
+DEBUG = env.bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [""]
