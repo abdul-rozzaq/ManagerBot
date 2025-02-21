@@ -29,7 +29,12 @@ def start(update: Update, context: CallbackContext):
 
 def buy(update: Update, context: CallbackContext):
     """Sotib olish tugmasi bosilganda"""
-    keyboard = [[InlineKeyboardButton("💳 Humo/UzCard", callback_data="humo-uzCard")]]
+    keyboard = [
+        [
+            InlineKeyboardButton("💳 Humo/UzCard", callback_data="humo-uzCard"),
+            InlineKeyboardButton("🌐 Chet eldan to'lov", callback_data="global-payment", url="https://t.me/tribute/app?startapp=spuq"),
+        ]
+    ]
     reply_markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
     update.message.reply_text(
         "💰 O‘zbekistonda bo‘lsangiz Uzcard yoki Humo orqali to‘lov qilsangiz bo‘ladi.\n\n"
@@ -160,7 +165,6 @@ def validate_expiry_date(update: Update, context: CallbackContext):
 def cancel(update: Update, context: CallbackContext):
     update.message.reply_text("❌ Jarayon bekor qilindi.")
     return ConversationHandler.END
-
 
 
 updater = Updater(token=settings.BOT_TOKEN, use_context=True)
