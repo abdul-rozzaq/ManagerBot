@@ -2,11 +2,8 @@ import re
 from datetime import datetime
 
 from django.conf import settings
-from telegram import (Bot, InlineKeyboardButton, InlineKeyboardMarkup,
-                      ReplyKeyboardMarkup, Update)
-from telegram.ext import (CallbackContext, CallbackQueryHandler,
-                          CommandHandler, ConversationHandler, Dispatcher,
-                          Filters, MessageHandler, Updater)
+from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, Update, WebAppInfo
+from telegram.ext import CallbackContext, CallbackQueryHandler, CommandHandler, ConversationHandler, Dispatcher, Filters, MessageHandler, Updater
 
 from .models import TelegramUser
 from .payments import process_payment
@@ -32,10 +29,11 @@ def buy(update: Update, context: CallbackContext):
     keyboard = [
         [
             InlineKeyboardButton("💳 Humo/UzCard", callback_data="humo-uzCard"),
-            InlineKeyboardButton("🌐 Chet eldan to'lov", callback_data="global-payment", url="https://t.me/tribute/app?startapp=spuq"),
         ]
     ]
+
     reply_markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
+
     update.message.reply_text(
         "💰 O‘zbekistonda bo‘lsangiz Uzcard yoki Humo orqali to‘lov qilsangiz bo‘ladi.\n\n"
         "🌍 Chet elda bo‘lsangiz Visa, Mastercard, Rus kartalari va boshqa ko'plab kartalar orqali to‘lovni amalga oshirishingiz mumkin.\n\n"
@@ -93,25 +91,17 @@ def back_to_main(update: Update, context: CallbackContext):
 def humo_uzcard(update: Update, context: CallbackContext):
     query = update.callback_query
     query.answer()
-    query.message.reply_text("Iltimos, to‘liq ismingiz va familiyangizni kiriting:")
-    return FULL_NAME
-
-
-def validate_full_name(update: Update, context: CallbackContext):
-    full_name = update.message.text.strip()
-    if not re.match(r"^[A-Za-z\' Ѐ-ӿ-]+$", full_name):
-        update.message.reply_text("❌ Iltimos, faqat harflardan iborat ism-familiya kiriting!")
-        return FULL_NAME
-    context.user_data["full_name"] = full_name
-    update.message.reply_text("Endi karta raqamingizni kiriting:")
+    query.message.reply_text("Iltimos, karta raqamingizni kiriting:")
     return CARD_NUMBER
 
 
 def validate_card_number(update: Update, context: CallbackContext):
     card_number = update.message.text.strip()
+    
     if not re.match(r"^[0-9]{16,20}$", card_number):
         update.message.reply_text("❌ Karta raqami noto‘g‘ri! 16 yoki 20 xonali raqam kiriting.")
         return CARD_NUMBER
+    
     context.user_data["card_number"] = card_number.replace(" ", "")
     update.message.reply_text("Endi karta amal qilish muddatini MM/YY formatida kiriting:")
     return EXPIRY_DATE
@@ -119,12 +109,15 @@ def validate_card_number(update: Update, context: CallbackContext):
 
 def validate_expiry_date(update: Update, context: CallbackContext):
     expiry_date = update.message.text.strip()
+
     if not re.match(r"^(0[1-9]|1[0-2])/[0-9]{2}$", expiry_date):
         update.message.reply_text("❌ Amal qilish muddati noto‘g‘ri! MM/YY formatida kiriting.")
         return EXPIRY_DATE
+
     month, year = map(int, expiry_date.split("/"))
     current_year = int(str(datetime.now().year)[-2:])
     current_month = datetime.now().month
+
     if year < current_year or (year == current_year and month < current_month):
         update.message.reply_text("❌ Karta muddati o‘tgan! Iltimos, yaroqli karta kiriting.")
         return EXPIRY_DATE
@@ -132,17 +125,13 @@ def validate_expiry_date(update: Update, context: CallbackContext):
     context.user_data["expiry_date"] = expiry_date
 
     user_id = update.message.chat_id
-
-    full_name = context.user_data["full_name"]
     card_number = context.user_data["card_number"]
-
     success = True
 
     if success:
         TelegramUser.objects.update_or_create(
             user_id=user_id,
             defaults={
-                "full_name": full_name,
                 "card_number": card_number,
                 "expiry_date": expiry_date,
             },
@@ -175,7 +164,6 @@ dispatcher.add_handler(
     ConversationHandler(
         entry_points=[CallbackQueryHandler(humo_uzcard, pattern="^humo-uzCard$")],
         states={
-            FULL_NAME: [MessageHandler(Filters.text & ~Filters.command, validate_full_name)],
             CARD_NUMBER: [MessageHandler(Filters.text & ~Filters.command, validate_card_number)],
             EXPIRY_DATE: [MessageHandler(Filters.text & ~Filters.command, validate_expiry_date)],
         },

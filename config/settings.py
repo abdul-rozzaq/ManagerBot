@@ -10,11 +10,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-##w!x&0i84(+-dy9*s12f2z0s(cc*mnf1g=o%x(dzczeuortjy"
 
+DEBUG = env.bool("DEBUG", default=False)
+
 BOT_TOKEN = env.str("BOT_TOKEN")
 CHANNEL_ID = env.str("CHANNEL_ID")
-
-DEBUG = env.bool("DEBUG", default=False)
 WEBHOOK_URL = env.str("WEBHOOK_URL")
+WEB_APP_URL = WEBHOOK_URL  # "https://dapper-sfogliatella-ffabe8.netlify.app/"
 
 ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [WEBHOOK_URL]
@@ -45,7 +46,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
