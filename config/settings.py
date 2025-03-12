@@ -1,5 +1,4 @@
 from pathlib import Path
-from click_up import ClickUp
 from environs import Env
 
 env = Env()
