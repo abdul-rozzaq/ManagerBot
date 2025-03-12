@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from click_up import ClickUp
 from environs import Env
 
 env = Env()
@@ -14,8 +14,7 @@ DEBUG = env.bool("DEBUG", default=False)
 
 BOT_TOKEN = env.str("BOT_TOKEN")
 CHANNEL_ID = env.str("CHANNEL_ID")
-WEBHOOK_URL = env.str("WEBHOOK_URL")
-WEB_APP_URL = WEBHOOK_URL  # "https://dapper-sfogliatella-ffabe8.netlify.app/"
+WEB_APP_URL = WEBHOOK_URL = env.str("WEBHOOK_URL")
 
 ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [WEBHOOK_URL]
@@ -99,3 +98,6 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "static_files"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+PAYMENT_PROVIDER_TOKEN = env.str("PAYMENT_PROVIDER_TOKEN")
+PRODUCT_PRICE = 350000
